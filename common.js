@@ -95,6 +95,12 @@ function bindThemeToggle() {
    Return visit: opens link directly (info already in localStorage).
    ============================================================ */
 
+// Google Doc IDs that require the lead-capture gate before opening.
+// Add more IDs here as new gated notes are published.
+const GATED_DOC_IDS = [
+  '1yCqtdRgGr7gAK0ORmPskoO_nQGuGuEw0WvTxdWp0_cA'  // Week 2 (6–12 July 2026)
+];
+
 const INDIAN_STATES = [
   'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh',
   'Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka',
@@ -106,7 +112,18 @@ const INDIAN_STATES = [
   'Jammu & Kashmir','Ladakh','Lakshadweep','Puducherry'
 ];
 
+function _isGatedUrl(url) {
+  if (!url) return false;
+  return GATED_DOC_IDS.some(id => url.includes(id));
+}
+
 function openNotesWithGate(url) {
+  // Non-gated notes (e.g. first-week / older docs) open directly
+  if (!_isGatedUrl(url)) {
+    window.open(url, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  // Gated notes: skip form if visitor already registered
   const existing = localStorage.getItem(VISITOR_KEY);
   if (existing) {
     window.open(url, '_blank', 'noopener,noreferrer');
